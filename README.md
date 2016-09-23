@@ -1,4 +1,5 @@
 
+[blog post](http://www.jianshu.com/p/620c2b0490ec)
 
 ![Tinker_imitator.png](https://raw.githubusercontent.com/zzz40500/Tinker_imitator/master/screenshot/img.png)  
 
