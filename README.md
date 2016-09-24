@@ -1,3 +1,17 @@
+### 基本原理
+
+这个demo简单演示了热补丁的一个解决方案，这个方案感觉跟QQ的差不多，都是通过修改ClassLoader中的pathList来达到热补丁的问题的，简单表示如下：
+- 将下载的patch dex与原来的dex进行bspatch合并
+- 重启后，将加载合并后的new_dex，将其加入到BaseDexClassLoader的pathList中的最开始
+- 此时new_dex中的类0将会优先被识别，看上去就跟替换了原来的类一样（实际上代码有两份）
+- demo中在Application中使用了onTrimMemory以使得在退回到后台时触发，触发的结果是打开一个空的service（用于重启），以及结束了自己
+- 当再次启动时，就会进行重加载操作，也就是第二步，替换pathList，这样就可以加载到新代码了。
+
+
+gradle插件提供了一个assemblePatch的task，就是用来打patch的，它可以对比原来生成的jar进行hash对比，以一个类为单位找出有羞异的部分，并将其打到一个dex中，而bsdiff的操作，则是放到去ide的插件中进行。
+
+感觉整个部分原理部分的很简单，反倒是生成patch的流程比较复杂，事关商业项目的话更是如此。
+
 
 [blog post](http://www.jianshu.com/p/620c2b0490ec)
 
@@ -6,7 +20,7 @@
 ##[原理: 微信热更新方案](http://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=2649286306&idx=1&sn=d6b2865e033a99de60b2d4314c6e0a25&scene=0#wechat_redirect)
 简单的讲: 增量更新  
 [Tinker_imitator地址](https://github.com/zzz40500/Tinker_imitator)
- 
+
 
       电脑:mac  
       编译工具:as & intellj  
@@ -60,13 +74,13 @@ log 是运行日志. 你可以直接使用日志中的命令执行,而不使用�
 ##4. 不足:  
 1. 热修复. 需要重启  
 * 只是代码级别的热修复. 不支持资源的替换.修改代码的时候不能新增资源id.  
-* 如果改变了两个dex里面的东西的话,那么占得内存就有点大了 
+* 如果改变了两个dex里面的东西的话,那么占得内存就有点大了
 
 
 ##5. todo:
 1. 签名验证;
 * gradle配置热修复
-* 支持instant run 
+* 支持instant run
 * 包裹dex.而不是直接传递dex;
 * patch版本控制;
 * 部分情况下不用重启app就能生效;
@@ -84,6 +98,3 @@ log 是运行日志. 你可以直接使用日志中的命令执行,而不使用�
 https://github.com/jasonross/Nuwa  
 https://github.com/ceabie/DexKnifePlugin  
 https://github.com/brok1n/androidBsdiffUpdate
-
-
-      
